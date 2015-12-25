@@ -1,13 +1,22 @@
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 public class Tiro {
 
 
-
+	BufferedImage image;
 	private double x, y;
 	private boolean flag = false;
 	public boolean isFlag() {
 		return flag;
 	}
+ 
 	public void setFlag(boolean flag) {
 		this.flag = flag;
 	}
@@ -22,6 +31,9 @@ public class Tiro {
 	}
 	public double getVelocidade() {
 		return velocidade;
+	}
+	public Rectangle getBordasTiro(){
+		return new Rectangle((int)x, (int)y, 10, 5);
 	}
 	
 	public boolean isEstaAtivo() {
@@ -44,29 +56,19 @@ public class Tiro {
 	private double velocidade;
 
 	private boolean estaAtivo;
-	public Tiro(int x, int y, int a){
-		this.x = x;
-		this.y = y;
-		this.angulo = 90 - a;
+	public Tiro(double d, double e, double f, int v) {
+		this.x = d + 6;
+		this.y = e - 25;
+		this.angulo = f;
 		
-		velocidade = 0;
-		this.estaAtivo = false;
+		velocidade = v;
+		this.estaAtivo = true;
 	}
-	public void aumentarVelocidade(){
-		velocidade++;
-	}
-	public void girarHorario(int a){
-		angulo += a;
-	}
-	public void girarAntiHorario(int a){
-		angulo -= a;
-	}
+	
 	public void mover(){
-		x = Math.abs(x + Math.cos(Math.toRadians(angulo)) * velocidade);
-		//System.out.println(x);
-		y = Math.abs(y + Math.sin(Math.toRadians(angulo)) * velocidade);
-		System.out.println(y);
-		//System.out.println(angulo);
+		x = x + Math.cos(Math.toRadians(angulo+270)) * velocidade;
+		y = y + Math.sin(Math.toRadians(angulo+270)) * velocidade;
+
 	}
 
 	}

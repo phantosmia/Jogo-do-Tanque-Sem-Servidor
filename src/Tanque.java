@@ -5,9 +5,12 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
+import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class Tanque {
+private ArrayList<Tiro> balas = new ArrayList<Tiro>();
 private double x, y;
 private boolean flag = false;
 public boolean isFlag() {
@@ -56,37 +59,53 @@ private boolean estaAtivo;
 public Tanque(int x, int y, int a, Color cor){
 	this.x = x;
 	this.y = y;
-	this.angulo = 90 - a;
+	this.angulo = a;
 	this.cor = cor;
-	velocidade = 0;
+	velocidade = 9;
 	this.estaAtivo = false;
+	balas = new ArrayList();
+}
+public void diminuirVelocidade(){
+	setVelocidade(0);
 }
 public void aumentarVelocidade(){
-	velocidade++;
+	if(velocidade < 30)
+		velocidade++; // nao quero que o jogado extrapole na velocidade de seu tanque.
 }
 public void girarHorario(int a){
+	if(angulo < 360)
 	angulo += a;
+	if(angulo == 360)
+		angulo = 360;
+	if(angulo >= 360)
+		angulo = 0;
 }
 public void girarAntiHorario(int a){
+	if(angulo > 0)
 	angulo -= a;
+	if(angulo <= 0)
+		angulo = 360;
+	//nao quero angulos menores que 0. meus angulos vao de 0 a 360.
 }
 public void mover(){
-	x = Math.abs(x + Math.cos(Math.toRadians(angulo)) * velocidade);
-	//System.out.println(x);
-	y = Math.abs(y + Math.sin(Math.toRadians(angulo)) * velocidade);
-	System.out.println(y);
-	//System.out.println(angulo);
+	//evitando que o x e o y sejam negativos para ajudar na colisao.
+	x = Math.abs(x + Math.cos(Math.toRadians(angulo+270)) * velocidade);
+	y = Math.abs(y + Math.sin(Math.toRadians(angulo+270)) * velocidade);
+	setX(x);
+	setY(y);
 }
 public void setEstaAtivo(boolean estaAtivo){
 	this.estaAtivo = estaAtivo;
 }
 public void draw(Graphics2D g2d){
+	
 	AffineTransform antes = g2d.getTransform();
 	AffineTransform depois = new AffineTransform();
 	depois.translate(x,y);
 	depois.rotate(Math.toRadians(angulo));
 	g2d.transform(depois);
 	g2d.setColor(cor);
+	
 	g2d.fillRect(-10, -12, 20, 24);
 	for(int i = -12; i <= 8; i += 4){
 		g2d.setColor(Color.LIGHT_GRAY);
@@ -117,4 +136,31 @@ public Shape getRectEnvolvente(){
 	Rectangle rect = new Rectangle(-24,-32,48,55);
 	return at.createTransformedShape(rect);
 }
+public Rectangle getBordasTanque(){
+	return new Rectangle((int)x-10,(int)y-10,20,24); //colisao
+}
+public ArrayList getBalas(){
+	return balas;
+}
+public void atirar() {
+	Tiro t;
+ //procurando da melhor forma possivel, fazer o tiro sair do canhao do TANQUE, de acordo com a rotacao.
+  	if(getAngulo() == 180)
+		 t = new Tiro(getX()-6,getY()+25,getAngulo(),20);
+	else if (getAngulo() > 180 && getAngulo() < 360)
+		t = new Tiro(getX()-16,getY()+25,getAngulo(),20);
+	else if (getAngulo() > 0 && getAngulo() <= 45)
+		t = new Tiro(getX(),getY()+20,getAngulo(),20);
+	else if (getAngulo() > 45  && getAngulo() <= 90)
+		t = new Tiro(getX()+20,getY()+20,getAngulo(),20);
+ 	else if (getAngulo() >= 90  && getAngulo() < 180)
+ 		t = new Tiro(getX()-20,getY()+20,getAngulo(),20);
+	else if(getAngulo() == 0)
+		 t = new Tiro(getX()-6,getY(),getAngulo(),7);
+	else
+		 t = new Tiro(getX(),getY()+25,getAngulo(),7);
+	if(getBalas().size() <= 3)
+	balas.add(t);
+}
+
 }
